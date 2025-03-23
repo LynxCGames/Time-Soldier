@@ -36,7 +36,10 @@ public class Almanac : BloonsTD6Mod
         ModHelperScrollPanel comboScroll = panel.AddScrollPanel(new Info("scrollPanel", -850, 0, 750, 1800), RectTransform.Axis.Vertical, VanillaSprites.BrownInsertPanelDark, 15, 50);
         foreach (var weapon in ModContent.GetContent<ComboTemplate>())
         {
-            comboScroll.AddScrollContent(CreateAlmanac(weapon, nameText, comboText, levelText, bonusText, statText, specialText));
+            if (weapon.discovered == true)
+            {
+                comboScroll.AddScrollContent(CreateAlmanac(weapon, nameText, comboText, levelText, bonusText, statText, specialText));
+            }
         }
 
         ModHelperButton closeBtn = panel.AddButton(new Info("closeBtn", 0, -1000, 600, 180), VanillaSprites.RedBtnLong, new System.Action(() => {

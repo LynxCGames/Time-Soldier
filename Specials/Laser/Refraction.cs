@@ -20,7 +20,7 @@ public class RefractionSelect : SpecialSelect
         {
             var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-            if (SpaceMarine.mod.weapon == "Laser" || SpaceMarine.mod.weapon == "Precision Laser")
+            if (SpaceMarine.mod.weapon == "Laser" || SpaceMarine.mod.weapon == "Precision Laser" || SpaceMarine.mod.weapon == "Plasma Launcher")
             {
                 var laser = Game.instance.model.GetTowerFromId("DartMonkey").GetAttackModel().weapons[0].projectile.Duplicate();
                 laser.GetDamageModel().damage = modifier.bonus;
@@ -28,6 +28,7 @@ public class RefractionSelect : SpecialSelect
                 laser.display = Game.instance.model.GetTowerFromId("DartlingGunner-300").GetAttackModel().weapons[0].projectile.display;
                 laser.scale /= 2;
                 laser.pierce = 2;
+                laser.maxPierce = 2;
 
                 if (SpaceMarine.mod.camoActive == true)
                 {
@@ -38,7 +39,7 @@ public class RefractionSelect : SpecialSelect
                     laser.GetDamageModel().immuneBloonProperties = BloonProperties.None;
                 }
 
-                towerModel.GetAttackModel().weapons[0].projectile.AddBehavior(new CreateProjectileOnContactModel("RefractionMod", laser, new ArcEmissionModel("", 3, 0, 25, null, false, false), false, false, false));
+                towerModel.GetAttackModel().weapons[0].projectile.AddBehavior(new CreateProjectileOnContactModel("RefractionMod", laser, new ArcEmissionModel("", 3, 0, 25, null, true, false), false, false, false));
             }
 
             if (SpaceMarine.mod.weapon == "Railgun")
@@ -49,6 +50,7 @@ public class RefractionSelect : SpecialSelect
                 laser.display = Game.instance.model.GetTowerFromId("DartlingGunner-300").GetAttackModel().weapons[0].projectile.display;
                 laser.scale /= 2;
                 laser.pierce = 2;
+                laser.maxPierce = 2;
 
                 if (SpaceMarine.mod.camoActive == true)
                 {
@@ -105,7 +107,7 @@ public class RefractionEquip : SpecialEquiped
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-        if (SpaceMarine.mod.weapon == "Laser" || SpaceMarine.mod.weapon == "Railgun" || SpaceMarine.mod.weapon == "Precision Laser")
+        if (SpaceMarine.mod.weapon == "Laser" || SpaceMarine.mod.weapon == "Railgun" || SpaceMarine.mod.weapon == "Precision Laser" || SpaceMarine.mod.weapon == "Plasma Launcher")
         {
             foreach (var behavior in towerModel.GetAttackModel().weapons[0].projectile.GetDescendants<CreateProjectileOnContactModel>().ToArray())
             {

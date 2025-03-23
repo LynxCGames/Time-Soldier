@@ -24,11 +24,26 @@ public class FlameSpreaderSelect : SpecialSelect
             {
                 towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus + 1;
                 towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().angle = modifier.bonus * 10 + 10;
+
+                if (SpaceMarine.mod.modifier1 == "Piercing Shot" || SpaceMarine.mod.modifier2 == "Piercing Shot")
+                {
+                    PiercingShotMod.PiercingShot(towerModel);
+                }
             }
 
             if (SpaceMarine.mod.weapon == "Eruption")
             {
                 towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus + 2;
+            }
+
+            if (SpaceMarine.mod.weapon == "Fireworks")
+            {
+                towerModel.GetAttackModel().weapons[1].projectile.GetDescendant<ArcEmissionModel>().count = 8 + ((int)modifier.bonus - 1) * 2;
+            }
+
+            if (SpaceMarine.mod.weapon == "Thorns of Wrath")
+            {
+                towerModel.GetAttackModel().weapons[0].GetDescendant<RandomEmissionModel>().count = (int)modifier.bonus + 6;
             }
 
             tower.UpdateRootModel(towerModel);
@@ -67,11 +82,26 @@ public class FlameSpreaderEquiped : SpecialEquiped
         {
             towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus + 1;
             towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().angle = modifier.bonus * 10 + 10;
+
+            if (SpaceMarine.mod.modifier1 == "Piercing Shot" || SpaceMarine.mod.modifier2 == "Piercing Shot")
+            {
+                PiercingShotMod.PiercingShot(towerModel);
+            }
         }
 
         if (SpaceMarine.mod.weapon == "Eruption")
         {
             towerModel.GetAttackModel().weapons[0].GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus + 2;
+        }
+
+        if (SpaceMarine.mod.weapon == "Fireworks")
+        {
+            towerModel.GetAttackModel().weapons[1].projectile.GetDescendant<ArcEmissionModel>().count = 8 + ((int)modifier.bonus - 1) * 2;
+        }
+
+        if (SpaceMarine.mod.weapon == "Thorns of Wrath")
+        {
+            towerModel.GetAttackModel().weapons[0].GetDescendant<RandomEmissionModel>().count = (int)modifier.bonus + 6;
         }
 
         tower.UpdateRootModel(towerModel);

@@ -36,6 +36,16 @@ public class Reseter : BloonsTD6Mod
             weapon.pierce = (int)weapon.StartingValues[0];
             weapon.speed = weapon.StartingValues[1];
             weapon.damage = (int)weapon.StartingValues[2];
+
+            if (weapon.WeaponName == "???")
+            {
+                weapon.discovered = true;
+            }
+            if (weapon.WeaponName == "Necromancer")
+            {
+                weapon.discovered = false;
+                weapon.level = 1;
+            }
         }
 
         foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
@@ -43,7 +53,14 @@ public class Reseter : BloonsTD6Mod
             modifier.level = 0;
             modifier.cost = 12;
             modifier.isUnlocked = false;
+            modifier.bonus = modifier.StartingValue;
+            modifier.icon = modifier.Icon;
+        }
 
+        foreach (var modifier in ModContent.GetContent<ScavengerTemplate>())
+        {
+            modifier.level = 0;
+            modifier.isUnlocked = false;
             modifier.bonus = modifier.StartingValue;
         }
 
@@ -52,7 +69,6 @@ public class Reseter : BloonsTD6Mod
             modifier.level = 0;
             modifier.cost = 15;
             modifier.isUnlocked = false;
-
             modifier.bonus = modifier.StartingValue;
         }
     }

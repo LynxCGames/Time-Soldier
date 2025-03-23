@@ -10,6 +10,8 @@ using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api;
 using BTD_Mod_Helper.Api.Enums;
 using BTD_Mod_Helper.Api.ModOptions;
+using Il2CppAssets.Scripts.Simulation.Bloons;
+using Il2CppAssets.Scripts.Data.Behaviors.Abilities;
 
 [assembly: MelonInfo(typeof(SpaceMarine.SpaceMarine), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
 [assembly: MelonGame("Ninja Kiwi", "BloonsTD6")]
@@ -36,6 +38,9 @@ public class SpaceMarine : BloonsTD6Mod
     public string modifier1 = "";
     public string modifier2 = "";
     public string modifier3 = "";
+    public float scavenger = 1;
+    public string upgradeSelect = "Weapons";
+    public string specialSelected = "";
 
     // Stats
     public int pierceLvl = 0;
@@ -52,8 +57,6 @@ public class SpaceMarine : BloonsTD6Mod
     public int camoCost = 30;
     public int mibCost = 80;
 
-    public int pierceTest = 0;
-
     public void Reset()
     {
         isSelected = false;
@@ -67,8 +70,11 @@ public class SpaceMarine : BloonsTD6Mod
         modifier1 = "";
         modifier2 = "";
         modifier3 = "";
+        scavenger = 1;
+        upgradeSelect = "Weapons";
+        specialSelected = "";
 
-        Reseter.SpecialReset();
+    Reseter.SpecialReset();
 
         pierceLvl = 0;
         speedLvl = 0;
@@ -179,7 +185,6 @@ public class SpaceMarine : BloonsTD6Mod
 
         }
     }
-
 
     [RegisterTypeInIl2Cpp(false)]
     public class MenuUi : MonoBehaviour

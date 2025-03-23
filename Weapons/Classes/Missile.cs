@@ -112,7 +112,7 @@ public class MissileEquip : WeaponEquiped
             towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
         }
 
-        foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+        foreach (var modifier in GetContent<ModifierTemplate>())
         {
             if (modifier.ModName == "Rapid Fire")
             {
@@ -125,7 +125,7 @@ public class MissileEquip : WeaponEquiped
 
         if (SpaceMarine.mod.modifier1 == "Cluster Bomb" || SpaceMarine.mod.modifier2 == "Cluster Bomb" || SpaceMarine.mod.modifier3 == "Cluster Bomb")
         {
-            foreach (var modifier in ModContent.GetContent<SpecialTemplate>())
+            foreach (var modifier in GetContent<SpecialTemplate>())
             {
                 if (modifier.ModName == "Cluster Bomb")
                 {
@@ -133,7 +133,7 @@ public class MissileEquip : WeaponEquiped
                     {
                         if (behavior.name.Contains("ClusterBomb"))
                         {
-                            behavior.projectile.GetDamageModel().damage = weapon.damage;
+                            behavior.projectile.GetDescendant<CreateProjectileOnExpireModel>().projectile.GetDamageModel().damage = weapon.damage;
                         }
                     }
                 }

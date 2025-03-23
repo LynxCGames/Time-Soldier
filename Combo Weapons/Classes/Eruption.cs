@@ -11,6 +11,7 @@ using UnityEngine;
 using BTD_Mod_Helper.Api.Enums;
 using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,12 +24,11 @@ public class Eruption : ComboTemplate
     public override float FontSize => 60;
     public override float[] StartingValues => [12, 1.5f, 2];
     public override string Range => "Mid-Range";
-    public override string PierceType => "OnContact";
-    public override int PierceValue => 2;
+    public override int[] PierceValue => [0, 2];
     public override string SpecialMods =>
-        "Fires out 3 explosive fireballs that explode on contact or when they expire. Explosion sets Bloons on fire and stuns them temporarily.\n\n" +
+        "Fires out 3 explosive fireballs that explode on contact. Explosion sets Bloons on fire and stuns them temporarily.\n\n" +
         " - Mid-Range weapon\n" +
-        " - Incendiary creates a wall of fire when it hits a Bloon\n" +
+        " - Incendiary creates a wall of fire when a fireball hits a Bloon\n" +
         " - Cluster Bomb shoots out mini firebombs\n" +
         " - Flame Spreader increases the number of fireballs\n" +
         " - Scorcher increases the burn damage";
@@ -48,7 +48,7 @@ public class EruptionSelect : ComboSelect
         burn.GetBehavior<DamageOverTimeModel>().damage = 1;
         burn.GetBehavior<DamageOverTimeModel>().interval = 0.5f;
 
-        var slowModel = new SlowModel("EruptionStun", 0, 1.25f, "Stun:Weak", 999, "Stun", true, false, null, false, false, false);
+        var slowModel = new SlowModel("EruptionStun", 0, 1.25f, "Stun:Weak", 999, "Stun", true, false, null, false, false, false, 1);
         var slowModifier = new SlowModifierForTagModel("EruptionStun", "Moabs", "Stun:Weak", 0, true, true, 0, false);
 
         var fireball = Game.instance.model.GetTowerFromId("BombShooter-100").GetAttackModel().Duplicate();
@@ -63,7 +63,7 @@ public class EruptionSelect : ComboSelect
         fireball.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.AddBehavior(slowModifier);
 
         // Stat Setter
-        fireball.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.pierce = weapon.pierce + SpaceMarine.mod.pierceLvl;
+        fireball.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.pierce = weapon.pierce + (SpaceMarine.mod.pierceLvl * 2);
         fireball.weapons[0].rate = weapon.speed;
         fireball.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage = weapon.damage + SpaceMarine.mod.damageLvl;
 
@@ -151,7 +151,7 @@ public class EruptionEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
         foreach (var modifier in GetContent<ModifierTemplate>())
@@ -160,7 +160,7 @@ public class EruptionEquip : ComboEquiped
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

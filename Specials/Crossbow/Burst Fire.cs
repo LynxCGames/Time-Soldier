@@ -4,6 +4,8 @@ using Il2CppAssets.Scripts.Simulation.Towers;
 using BTD_Mod_Helper.Extensions;
 using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
+using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Behaviors;
 
 namespace SpaceMarine;
 
@@ -16,7 +18,7 @@ public class BurstSelect : SpecialSelect
         {
             var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-            if (SpaceMarine.mod.weapon == "Crossbow")
+            if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Fireworks")
             {
                 towerModel.GetAttackModel().weapons[0].emission = new ParallelEmissionModel("", (int)modifier.bonus, 25, 0, true, null);
             }
@@ -41,6 +43,12 @@ public class BurstSelect : SpecialSelect
                 {
                     PiercingShotMod.PiercingShot(towerModel);
                 }
+            }
+
+            if (SpaceMarine.mod.weapon == "Forest Spirit")
+            {
+                towerModel.GetBehavior<SpiritOfTheForestModel>().damageOverTimeZoneModelFar.GetDescendant<DamageOverTimeCustomModel>().damage += modifier.level;
+                towerModel.GetBehavior<SpiritOfTheForestModel>().damageOverTimeZoneModelFar.GetDescendant<DamageOverTimeCustomModel>().interval = 0.25f;
             }
 
             tower.UpdateRootModel(towerModel);
@@ -69,7 +77,7 @@ public class BurstEquiped : SpecialEquiped
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-        if (SpaceMarine.mod.weapon == "Crossbow")
+        if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Fireworks")
         {
             towerModel.GetAttackModel().weapons[0].GetDescendant<ParallelEmissionModel>().count = (int)modifier.bonus;
         }
@@ -94,6 +102,11 @@ public class BurstEquiped : SpecialEquiped
             {
                 PiercingShotMod.PiercingShot(towerModel);
             }
+        }
+
+        if (SpaceMarine.mod.weapon == "Forest Spirit")
+        {
+            towerModel.GetBehavior<SpiritOfTheForestModel>().damageOverTimeZoneModelFar.GetDescendant<DamageOverTimeCustomModel>().damage += 1;
         }
 
         tower.UpdateRootModel(towerModel);

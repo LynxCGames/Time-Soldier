@@ -6,6 +6,7 @@ using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2CppAssets.Scripts.Models.Towers.Weapons.Behaviors;
 using Il2CppSystem.Linq;
+using Il2CppAssets.Scripts.Models.Towers.Behaviors.Abilities.Behaviors;
 
 namespace SpaceMarine;
 
@@ -18,7 +19,7 @@ public class SharpshooterSelect : SpecialSelect
         {
             var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-            if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Icicle Impale")
+            if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Icicle Impale" || SpaceMarine.mod.weapon == "Forest Spirit")
             {
                 var text = Game.instance.model.GetTowerFromId("DartMonkey-004").GetAttackModel().weapons[0].projectile.GetBehavior<ShowTextOnHitModel>().Duplicate();
                 var crit = Game.instance.model.GetTowerFromId("DartMonkey-004").GetAttackModel().weapons[0].GetBehavior<CritMultiplierModel>().Duplicate();
@@ -34,6 +35,7 @@ public class SharpshooterSelect : SpecialSelect
             {
                 var text = Game.instance.model.GetTowerFromId("DartMonkey-004").GetAttackModel().weapons[0].projectile.GetBehavior<ShowTextOnHitModel>().Duplicate();
                 var crit = towerModel.GetAttackModel().weapons[0].projectile.Duplicate();
+                crit.display = Game.instance.model.GetTowerFromId("DartlingGunner-040").GetAbility().GetBehavior<ActivateAttackModel>().attacks[0].weapons[0].projectile.display;
                 text.text = "Crit";
                 crit.AddBehavior(text);
 
@@ -56,6 +58,24 @@ public class SharpshooterSelect : SpecialSelect
                 {
                     PiercingShotMod.PiercingShot(towerModel);
                 }
+            }
+
+            if (SpaceMarine.mod.weapon == "Fireworks")
+            {
+                var text = Game.instance.model.GetTowerFromId("DartMonkey-004").GetAttackModel().weapons[0].projectile.GetBehavior<ShowTextOnHitModel>().Duplicate();
+                text.text = "Crit";
+
+                var firecrackerCrit = towerModel.GetAttackModel().weapons[0].projectile.Duplicate();
+                var fireworkCrit = towerModel.GetAttackModel().weapons[1].projectile.Duplicate();
+
+                firecrackerCrit.AddBehavior(text);
+                fireworkCrit.AddBehavior(text);
+
+                firecrackerCrit.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage *= modifier.bonus;
+                fireworkCrit.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage *= modifier.bonus;
+
+                towerModel.GetAttackModel().weapons[0].AddBehavior(new ChangeProjectilePerEmitModel("SharpshotMod", towerModel.GetAttackModel().weapons[0].projectile, firecrackerCrit, 8, 6, 5, null, 0, 0, 0));
+                towerModel.GetAttackModel().weapons[1].AddBehavior(new ChangeProjectilePerEmitModel("SharpshotMod", towerModel.GetAttackModel().weapons[0].projectile, fireworkCrit, 3, 6, 5, null, 0, 0, 0));
             }
 
             tower.UpdateRootModel(towerModel);
@@ -84,7 +104,7 @@ public class SharpshooterEquip : SpecialEquiped
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-        if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Icicle Impale")
+        if (SpaceMarine.mod.weapon == "Crossbow" || SpaceMarine.mod.weapon == "Icicle Impale" || SpaceMarine.mod.weapon == "Forest Spirit")
         {
             towerModel.GetAttackModel().weapons[0].GetBehavior<CritMultiplierModel>().damage = towerModel.GetAttackModel().weapons[0].projectile.GetDamageModel().damage * modifier.bonus;
         }
@@ -95,7 +115,7 @@ public class SharpshooterEquip : SpecialEquiped
             {
                 if (behavior.name.Contains("HydraRocket"))
                 {
-                    behavior.projectile.GetDamageModel().damage = towerModel.GetAttackModel().weapons[0].projectile.GetDamageModel().damage * modifier.bonus;
+                    behavior.projectile.GetDamageModel().damage = towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage * modifier.bonus;
                 }
             }
         }
@@ -108,6 +128,15 @@ public class SharpshooterEquip : SpecialEquiped
             {
                 PiercingShotMod.PiercingShot(towerModel);
             }
+        }
+
+        if (SpaceMarine.mod.weapon == "Fireworks")
+        {
+            towerModel.GetAttackModel().weapons[0].GetDescendant<ChangeProjectilePerEmitModel>().changedProjectileModel.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage =
+                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage * modifier.bonus;
+
+            towerModel.GetAttackModel().weapons[1].GetDescendant<ChangeProjectilePerEmitModel>().changedProjectileModel.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage =
+                towerModel.GetAttackModel().weapons[1].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage * modifier.bonus;
         }
 
         tower.UpdateRootModel(towerModel);

@@ -9,7 +9,7 @@ using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 namespace SpaceMarine;
 
 public class SelectingStat : BloonsTD6Mod
-{
+{/*
     public static void WeaponPierceSelect(Tower tower, WeaponTemplate weapon)
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
@@ -18,12 +18,14 @@ public class SelectingStat : BloonsTD6Mod
         if (weapon.PierceType == "Normal" && weapon.WeaponName == mod.weapon)
         {
             towerModel.GetAttackModel().weapons[0].projectile.pierce += weapon.PierceValue;
+            //towerModel.GetAttackModel().GetDescendants<ProjectileModel>().ForEach(model => model.pierce += weapon.PierceValue);
         }
 
         // Create Projectile On Contact Pierce
         if (weapon.PierceType == "OnContact" && weapon.WeaponName == mod.weapon)
         {
             towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.pierce += weapon.PierceValue;
+            //towerModel.GetAttackModel().GetDescendants<CreateProjectileOnContactModel>().ForEach(model => model.projectile.pierce += weapon.PierceValue);
         }
 
         tower.UpdateRootModel(towerModel);
@@ -37,6 +39,7 @@ public class SelectingStat : BloonsTD6Mod
         if (weapon.PierceType == "Normal" && weapon.WeaponName == mod.weapon)
         {
             towerModel.GetAttackModel().weapons[0].projectile.pierce += weapon.PierceValue;
+            //towerModel.GetAttackModel().GetDescendants<ProjectileModel>().ForEach(model => model.pierce += weapon.PierceValue);
         }
 
         // Create Projectile On Contact Pierce
@@ -57,8 +60,14 @@ public class SelectingStat : BloonsTD6Mod
             towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectilesInAreaModel>().projectileModel.pierce += weapon.PierceValue;
         }
 
+        // Fireworks
+        if (weapon.PierceType == "Fireworks" && weapon.WeaponName == mod.weapon)
+        {
+            towerModel.GetAttackModel().GetDescendants<CreateProjectileOnContactModel>().ForEach(model => model.projectile.pierce += weapon.PierceValue);
+        }
+
         tower.UpdateRootModel(towerModel);
-    }
+    }*/
 
     public static void WeaponRangeSelect(Tower tower, WeaponTemplate weapon)
     {

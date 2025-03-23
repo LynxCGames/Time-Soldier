@@ -9,6 +9,7 @@ using Il2CppAssets.Scripts.Unity;
 using BTD_Mod_Helper.Api.Enums;
 using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2CppAssets.Scripts.Models.Towers.Behaviors.Attack.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Projectiles;
 
 namespace SpaceMarineTower
 {
@@ -33,7 +34,6 @@ namespace SpaceMarineTower
             towerModel.towerSelectionMenuThemeId = "SelectPointInput";
             towerModel.dontDisplayUpgrades = true;
             towerModel.GetAttackModel().RemoveWeapon(towerModel.GetAttackModel().weapons[0]);
-            towerModel.GetAttackModel().name = "MainAttacks";
             towerModel.GetAttackModel().range = 40;
             towerModel.range = 40;
             towerModel.GetAttackModel().AddBehavior(new TargetFirstPrioCamoModel("", true, false));

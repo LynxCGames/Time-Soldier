@@ -16,7 +16,7 @@ namespace SpaceMarine;
 public class Test : ComboTemplate
 {
     public override string WeaponName => "";
-    public override string Icon => VanillaSprites.RocketStormUpgradeIcon;
+    public override string Icon => VanillaSprites.;
     public override string[] comboWeapons => ["", ""];
     public override string Bonus => "";
     public override float FontSize => 60;
@@ -59,7 +59,7 @@ public class CLevel : ComboLevel
     public override string WeaponName => "";
     public override void Level(WeaponTemplate weapon1, ComboTemplate combo)
     {
-        foreach (var weapon2 in ModContent.GetContent<WeaponTemplate>())
+        foreach (var weapon2 in GetContent<WeaponTemplate>())
         {
             if (weapon1.WeaponName == combo.comboWeapons[0] && weapon2.WeaponName == combo.comboWeapons[1])
             {
@@ -71,11 +71,11 @@ public class CLevel : ComboLevel
                     if (combo.level > 1)
                     {
                         var speed1 = (1 - weapon1.speed) / 2 + 1;
-                        var speed2 = (2 - weapon2.speed) / 2 + 1;
+                        var speed2 = (1 - weapon2.speed) / 2 + 1;
 
-                        combo.pierce = 8 + (int)Mathf.Round(weapon1.pierce / 3) + (int)Mathf.Round(weapon2.pierce / 2);
-                        combo.speed = Mathf.Round((1.5f / speed1 / speed2) * 100) / 100;
-                        combo.damage = 1 + (int)Mathf.Round(weapon1.damage / 2) + (int)Mathf.Round(weapon2.damage / 4);
+                        combo.pierce = (int)combo.StartingValues[0] + (int)Mathf.Round(weapon1.pierce / 2) + (int)Mathf.Round(weapon2.pierce / 2);
+                        combo.speed = Mathf.Round(combo.StartingValues[1] / speed1 / speed2 * 100) / 100;
+                        combo.damage = (int)combo.StartingValues[2] + (int)Mathf.Round(weapon1.damage / 2) + (int)Mathf.Round(weapon2.damage / 2);
                     }
                 }
             }
@@ -89,11 +89,11 @@ public class CLevel : ComboLevel
                     if (combo.level > 1)
                     {
                         var speed1 = (1 - weapon2.speed) / 2 + 1;
-                        var speed2 = (2 - weapon1.speed) / 2 + 1;
+                        var speed2 = (1 - weapon1.speed) / 2 + 1;
 
-                        combo.pierce = 8 + (int)Mathf.Round(weapon2.pierce / 3) + (int)Mathf.Round(weapon1.pierce / 2);
-                        combo.speed = Mathf.Round((1.5f / speed2 / speed1) * 100) / 100;
-                        combo.damage = 1 + (int)Mathf.Round(weapon2.damage / 2) + (int)Mathf.Round(weapon1.damage / 4);
+                        combo.pierce = (int)combo.StartingValues[0] + (int)Mathf.Round(weapon2.pierce / 2) + (int)Mathf.Round(weapon1.pierce / 2);
+                        combo.speed = Mathf.Round(combo.StartingValues[1] / speed1 / speed2 * 100) / 100;
+                        combo.damage = (int)combo.StartingValues[2] + (int)Mathf.Round(weapon2.damage / 2) + (int)Mathf.Round(weapon1.damage / 2);
                     }
                 }
             }

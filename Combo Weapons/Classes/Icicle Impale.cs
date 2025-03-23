@@ -8,9 +8,9 @@ using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2Cpp;
 using Il2CppAssets.Scripts.Models.Towers.Weapons.Behaviors;
 using System;
-using BTD_Mod_Helper.Api;
 using UnityEngine;
 using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,8 +23,7 @@ public class IcicleImpale : ComboTemplate
     public override float FontSize => 55;
     public override float[] StartingValues => [10, 1.1f, 2];
     public override string Range => "Mid-Range";
-    public override string PierceType => "OnContact";
-    public override int PierceValue => 2;
+    public override int[] PierceValue => [0, 2];
     public override string SpecialMods =>
         "Icicle Impale Fires a large icicle that creates an ice burst when it hits a Bloon. Icicle can hit up to 2 targets. Pierce affects the pierce of the ice burst only. Ice burst deals half of the weapon's damage.\n\n" +
         " - Mid-Range weapon\n" +
@@ -46,7 +45,7 @@ public class IcicleImpaleSelect : ComboSelect
         // Creating Attack Model
         var effect = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.GetBehavior<CreateEffectOnContactModel>().Duplicate();
         var sound = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].GetBehavior<CreateSoundOnProjectileCreatedModel>().Duplicate();
-        var explosion = Game.instance.model.GetTowerFromId("BombShooter").GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().Duplicate();
+        var explosion = Game.instance.model.GetTowerFromId("BombShooter-100").GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().Duplicate();
         explosion.name = "IcicleImpale";
         explosion.projectile.collisionPasses = new int[] { 0, -1 };
         explosion.projectile.AddBehavior(new FreezeModel("", 0, 1.5f, "CryoIce:Regular:Freeze", 3, "Ice", true, new Il2CppAssets.Scripts.Models.Bloons.Behaviors.GrowBlockModel(""), null, 0, false, true, false));
@@ -155,16 +154,16 @@ public class IcicleImpaleEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
-        foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+        foreach (var modifier in GetContent<ModifierTemplate>())
         {
             if (modifier.ModName == "Rapid Fire")
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

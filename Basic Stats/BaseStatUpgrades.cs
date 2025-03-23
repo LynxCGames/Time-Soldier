@@ -9,6 +9,13 @@ using BTD_Mod_Helper.Extensions;
 using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2CppAssets.Scripts.Models.Towers.Weapons;
 using BTD_Mod_Helper.Api;
+using Il2CppAssets.Scripts.Models.Towers.Behaviors;
+using Il2Cpp;
+using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Projectiles;
+using Il2CppSystem.Linq;
+using System.Linq;
+using MelonLoader;
 
 namespace SpaceMarine;
 
@@ -20,15 +27,47 @@ public class BaseStatUpgrades : BloonsTD6Mod
         {
             if (mod.weapon != "")
             {
+                var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
+
                 foreach (var weapon in ModContent.GetContent<WeaponTemplate>())
                 {
-                    SelectingStat.WeaponPierceSelect(tower, weapon);
+                    if (weapon.WeaponName == mod.weapon)
+                    {
+                        ProjectileModel[] projectiles = towerModel.GetAttackModel().GetDescendants<ProjectileModel>().ToArray();
+
+                        for (int i = 0; i < weapon.PierceValue.Count(); i++)
+                        {/*
+                            MelonLogger.Msg(projectiles[i].name);
+                            MelonLogger.Msg(projectiles[i].pierce);
+                            MelonLogger.Msg(weapon.PierceValue[i]);*/
+                            projectiles[i].pierce += weapon.PierceValue[i];
+                            //MelonLogger.Msg(projectiles[i].pierce);
+                            //MelonLogger.Msg("");
+                        }
+                    }
                 }
 
                 foreach (var weapon in ModContent.GetContent<ComboTemplate>())
                 {
-                    SelectingStat.ComboPierceSelect(tower, weapon);
+                    if (weapon.WeaponName == mod.weapon)
+                    {
+                        ProjectileModel[] projectiles = towerModel.GetAttackModel().GetDescendants<ProjectileModel>().ToArray();
+
+                        for (int i = 0; i < weapon.PierceValue.Count(); i++)
+                        {/*
+                            MelonLogger.Msg(projectiles[i].name);
+                            MelonLogger.Msg(projectiles[i].pierce);
+                            MelonLogger.Msg(weapon.PierceValue[i]);*/
+                            projectiles[i].pierce += weapon.PierceValue[i];
+                            //MelonLogger.Msg(projectiles[i].pierce);
+                            //MelonLogger.Msg("");
+                        }
+
+                        //MelonLogger.Msg("\n");
+                    }
                 }
+
+                tower.UpdateRootModel(towerModel);
             }
 
             mod.pierceLvl++;
@@ -56,7 +95,7 @@ public class BaseStatUpgrades : BloonsTD6Mod
             if (mod.weapon != "")
             {
                 var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
-                towerModel.GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
+                towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
                 tower.UpdateRootModel(towerModel);
             }
 
@@ -120,7 +159,7 @@ public class BaseStatUpgrades : BloonsTD6Mod
             if (mod.weapon != "")
             {
                 var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
-                towerModel.GetDescendants<DamageModel>().ForEach(model => model.damage += 1);
+                towerModel.GetAttackModel().GetDescendants<DamageModel>().ForEach(model => model.damage += 1);
 
                 if (mod.weapon == "Graviton")
                 {
@@ -182,7 +221,17 @@ public class BaseStatUpgrades : BloonsTD6Mod
             if (mod.weapon != "")
             {
                 var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
-                towerModel.GetDescendants<DamageModel>().ForEach(model => model.immuneBloonProperties = Il2Cpp.BloonProperties.None);
+                towerModel.GetDescendants<DamageModel>().ForEach(model => model.immuneBloonProperties = BloonProperties.None);
+
+                if (mod.weapon == "Forest Spirit")
+                {
+                    towerModel.GetBehavior<SpiritOfTheForestModel>().GetDescendant<DamageOverTimeCustomModel>().immuneBloonProperties = BloonProperties.None;
+                }
+                if (mod.weapon == "Graviton")
+                {
+                    towerModel.GetDescendant<CreateTowerModel>().tower.GetDescendants<DamageModel>().ForEach(model => model.immuneBloonProperties = BloonProperties.None);
+                }
+
                 tower.UpdateRootModel(towerModel);
             }
 

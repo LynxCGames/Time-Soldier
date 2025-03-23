@@ -3,7 +3,7 @@ namespace SpaceMarine;
 public static class ModHelperData
 {
     public const string WorksOnVersion = "46.0";
-    public const string Version = "1.0.0";
+    public const string Version = "1.1.0";
     public const string Name = "Time Soldier";
     public const string Author = "LynxC";
 

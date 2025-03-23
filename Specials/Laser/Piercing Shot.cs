@@ -9,6 +9,8 @@ using Il2CppAssets.Scripts.Models.Towers.Weapons.Behaviors;
 using Assets;
 using System.Linq;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppSystem.Linq;
+using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
 
 namespace SpaceMarine;
 
@@ -60,6 +62,17 @@ public class PiercingShotSelect : SpecialSelect
                 towerModel.GetAttackModel().weapons[0].AddBehavior(new ChangeProjectilePerEmitModel("PiercingMod", towerModel.GetAttackModel().weapons[0].projectile, charge, (int)modifier.bonus, 6, 5, null, 0, 0, 0));
             }
 
+            if (SpaceMarine.mod.weapon == "Plasma Launcher")
+            {
+                foreach (var behavior in towerModel.GetAttackModel().weapons[0].GetBehavior<ChangeProjectilePerEmitModel>().changedProjectileModel.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+                {
+                    if (behavior.name.Contains("MiniRocketStorm"))
+                    {
+                        behavior.GetDescendant<ArcEmissionModel>().count = 17 - (int)modifier.bonus;
+                    }
+                }
+            }
+
             tower.UpdateRootModel(towerModel);
         }
     }
@@ -86,11 +99,25 @@ public class PiercingShotEquip : SpecialEquiped
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-        for (int i = 0; i < modifier.Weapons.Count(); i++)
+        if (SpaceMarine.mod.weapon != "Plasma Launcher")
         {
-            if (SpaceMarine.mod.weapon == modifier.Weapons[i])
+            for (int i = 0; i < modifier.LaserWeapons.Count(); i++)
             {
-                towerModel.GetAttackModel().GetDescendant<ChangeProjectilePerEmitModel>().forProjectileCount = (int)modifier.bonus;
+                if (SpaceMarine.mod.weapon == modifier.LaserWeapons[i])
+                {
+                    towerModel.GetAttackModel().GetDescendant<ChangeProjectilePerEmitModel>().forProjectileCount = (int)modifier.bonus;
+                }
+            }
+        }
+
+        if (SpaceMarine.mod.weapon == "Plasma Launcher")
+        {
+            foreach (var behavior in towerModel.GetAttackModel().weapons[0].GetBehavior<ChangeProjectilePerEmitModel>().changedProjectileModel.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+            {
+                if (behavior.name.Contains("MiniRocketStorm"))
+                {
+                    behavior.GetDescendant<ArcEmissionModel>().count = 17 - (int)modifier.bonus;
+                }
             }
         }
 

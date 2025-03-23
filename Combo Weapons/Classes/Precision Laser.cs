@@ -11,6 +11,7 @@ using System;
 using UnityEngine;
 using BTD_Mod_Helper.Api;
 using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,8 +24,7 @@ public class PrecisionLaser : ComboTemplate
     public override float FontSize => 50;
     public override float[] StartingValues => [5, 1.2f, 2];
     public override string Range => "Long-Range";
-    public override string PierceType => "OnContact";
-    public override int PierceValue => 1;
+    public override int[] PierceValue => [0, 1];
     public override string SpecialMods =>
         "Fires a precision laser that can't miss and can bounce up to 2 times. Laser creates an icy burst when it hits a Bloon. Pierce affects the pierce of the ice burst only. Ice burst deals half of the weapon's damage.\n\n" +
         " - Long-Range weapon\n" +
@@ -165,16 +165,16 @@ public class PrecisionLaserEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
-        foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+        foreach (var modifier in GetContent<ModifierTemplate>())
         {
             if (modifier.ModName == "Rapid Fire")
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

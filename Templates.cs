@@ -16,8 +16,7 @@ namespace SpaceMarine
         public abstract float NameSize { get; }
         public abstract float[] StartingValues { get; }
         public abstract string Range { get; }
-        public abstract string PierceType { get; }
-        public abstract int PierceValue { get; }
+        public abstract int[] PierceValue { get; }
         public int pierce = 1;
         public float speed = 1;
         public int damage = 1;
@@ -59,13 +58,13 @@ namespace SpaceMarine
         public abstract string SpecialMods { get; }
         public abstract float[] StartingValues { get; }
         public abstract string Range { get; }
-        public virtual string PierceType { get; }
-        public virtual int PierceValue { get; }
+        public abstract int[] PierceValue { get; }
         public int pierce = 1;
         public float speed = 1;
         public int damage = 1;
         public int level = 0;
         public bool isUnlocked = false;
+        public bool discovered = true;
     }
 
     public abstract class ComboSelect : ModContent
@@ -109,6 +108,47 @@ namespace SpaceMarine
         public int level = 0;
         public float cost = 12;
         public bool isUnlocked = false;
+        public string icon = "";
+    }
+
+    public abstract class ScavengerTemplate : ModContent
+    {
+        public override void Register() { }
+        public abstract int MaxLevel { get; }
+        public abstract string[] CostValues { get; }
+        public abstract float[] Cost { get; }
+        public abstract float StartingValue { get; }
+        public float bonus = 1;
+        public int level = 0;
+        public bool isUnlocked = false;
+    }
+
+    public abstract class ModifierSelect : ModContent
+    {
+        public override void Register() { }
+        public abstract string ModName { get; }
+        public abstract void EditTower(ModifierTemplate modifier, Tower tower);
+    }
+
+    public abstract class ModifierLevel : ModContent
+    {
+        public override void Register() { }
+        public abstract string ModName { get; }
+        public abstract void Level(ModifierTemplate modifier, Tower tower);
+    }
+
+    public abstract class ScavengerLevel : ModContent
+    {
+        public override void Register() { }
+        public abstract string ModName { get; }
+        public abstract void Level(ScavengerTemplate modifier, Tower tower);
+    }
+
+    public abstract class ModifierEquiped : ModContent
+    {
+        public override void Register() { }
+        public abstract string ModName { get; }
+        public abstract void EditTower(ModifierTemplate modifier, Tower tower);
     }
 
     // Special Modifier Templates
@@ -117,7 +157,8 @@ namespace SpaceMarine
         public override void Register() { }
         public abstract string ModName { get; }
         public abstract string Icon { get; }
-        public abstract string[] Weapons { get; }
+        public abstract string Weapon { get; }
+        public virtual string[] LaserWeapons { get; }
         public abstract string WeaponIcon { get; }
         public abstract string Effect { get; }
         public abstract int MaxLevel { get; }

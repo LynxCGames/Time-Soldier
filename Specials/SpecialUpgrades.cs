@@ -5,6 +5,7 @@ using BTD_Mod_Helper.Api;
 using Il2CppAssets.Scripts.Simulation.Towers;
 using static SpaceMarine.SpaceMarine;
 using UnityEngine;
+using MelonLoader;
 
 namespace SpaceMarine;
 
@@ -72,6 +73,24 @@ public class SpecialUpgrades : BloonsTD6Mod
                 level.Text.text = "Lvl " + modifier.level;
                 text.Text.text = $"{mod.scrap}";
                 modifierCost.Text.text = $"{modifier.cost}";
+            }
+        }));
+        ModHelperImage upgradeImage = upgradeBtn.AddImage(new Info("image", 0, 0, 100), VanillaSprites.UpgradeIcon2);
+        
+        return panel;
+    }
+
+    public static ModHelperPanel CreateSpecialSelect(RectTransform rect, WeaponTemplate weapon, Tower tower)
+    {
+        var panel = ModHelperPanel.Create(new Info("ModContent" + weapon.WeaponName, 0, 0, 650, 160), VanillaSprites.MainBgPanelJukebox);
+        ModHelperText name = panel.AddText(new Info("name", 0, 0, 300, 80), weapon.WeaponName, 50);
+        ModHelperImage image = panel.AddImage(new Info("image", -230, 0, 150), weapon.Icon);
+        ModHelperButton upgradeBtn = panel.AddButton(new Info("button", 245, 0, 120), VanillaSprites.BlueBtnSquare, new System.Action(() => {
+            if (mod.specialSelected != weapon.WeaponName)
+            {
+                mod.specialSelected = weapon.WeaponName;
+                MenuUi.instance.CloseMenu();
+                MenuUi.CreateMenu(rect, tower);
             }
         }));
         ModHelperImage upgradeImage = upgradeBtn.AddImage(new Info("image", 0, 0, 100), VanillaSprites.UpgradeIcon2);

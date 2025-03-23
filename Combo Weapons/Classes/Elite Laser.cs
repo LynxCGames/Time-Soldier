@@ -11,6 +11,7 @@ using UnityEngine;
 using BTD_Mod_Helper.Api.Enums;
 using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,8 +24,7 @@ public class EliteLaser : ComboTemplate
     public override float FontSize => 55;
     public override float[] StartingValues => [3, 1.2f, 1];
     public override string Range => "Mid-Range";
-    public override string PierceType => "OnExhaust";
-    public override int PierceValue => 1;
+    public override int[] PierceValue => [0, 1];
     public override string SpecialMods =>
         "Fires 2 standard looking lasers. After a short delay, the lasers immediately seek out any nearby Bloons and set them on fire.\n\n" +
         " - Mid-Range weapon\n" +
@@ -167,7 +167,7 @@ public class EliteLaserEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
         foreach (var modifier in GetContent<ModifierTemplate>())
@@ -176,7 +176,7 @@ public class EliteLaserEquip : ComboEquiped
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

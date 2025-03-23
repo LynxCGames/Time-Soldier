@@ -17,15 +17,20 @@ public class ScorcherSelect : SpecialSelect
         {
             var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-            if (SpaceMarine.mod.weapon == "Fire")
+            if (SpaceMarine.mod.weapon == "Fire" || SpaceMarine.mod.weapon == "Fireworks" || SpaceMarine.mod.weapon == "Thorns of Wrath")
             {
-                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<AddBehaviorToBloonModel>().GetBehavior<DamageOverTimeModel>().interval = modifier.bonus;
+                towerModel.GetAttackModel().GetDescendants<DamageOverTimeModel>().ForEach(model => model.interval = modifier.bonus);
             }
 
             if (SpaceMarine.mod.weapon == "Elite Laser")
             {
                 towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnExhaustFractionModel>().
                     projectile.GetBehavior<AddBehaviorToBloonModel>().GetBehavior<DamageOverTimeModel>().damage = 20 - (modifier.bonus * 20);
+
+                if (SpaceMarine.mod.modifier1 == "Piercing Shot" || SpaceMarine.mod.modifier2 == "Piercing Shot")
+                {
+                    PiercingShotMod.PiercingShot(towerModel);
+                }
             }
 
             if (SpaceMarine.mod.weapon == "Eruption")
@@ -60,15 +65,20 @@ public class ScorcherEquiped : SpecialEquiped
     {
         var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
 
-        if (SpaceMarine.mod.weapon == "Fire")
+        if (SpaceMarine.mod.weapon == "Fire" || SpaceMarine.mod.weapon == "Fireworks" || SpaceMarine.mod.weapon == "Thorns of Wrath")
         {
-            towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<AddBehaviorToBloonModel>().GetBehavior<DamageOverTimeModel>().interval = modifier.bonus;
+            towerModel.GetAttackModel().GetDescendants<DamageOverTimeModel>().ForEach(model => model.interval = modifier.bonus);
         }
 
         if (SpaceMarine.mod.weapon == "Elite Laser")
         {
             towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnExhaustFractionModel>().
                 projectile.GetBehavior<AddBehaviorToBloonModel>().GetBehavior<DamageOverTimeModel>().damage = 20 - (modifier.bonus * 20);
+
+            if (SpaceMarine.mod.modifier1 == "Piercing Shot" || SpaceMarine.mod.modifier2 == "Piercing Shot")
+            {
+                PiercingShotMod.PiercingShot(towerModel);
+            }
         }
 
         if (SpaceMarine.mod.weapon == "Eruption")

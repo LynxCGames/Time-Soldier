@@ -5,7 +5,6 @@ using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Models.Towers.Filters;
 using Il2CppAssets.Scripts.Models.Towers;
-using BTD_Mod_Helper.Api;
 using System;
 
 namespace SpaceMarine;
@@ -21,7 +20,7 @@ public class CrossbowSelect : WeaponSelect
         var crossbow = Game.instance.model.GetTowerFromId("DartMonkey").GetAttackModel().Duplicate();
         crossbow.weapons[0].projectile.display = Game.instance.model.GetTowerFromId("DartMonkey-003").GetAttackModel().weapons[0].projectile.display;
         crossbow.weapons[0].projectile.GetBehavior<TravelStraitModel>().Lifespan *= 1.1f;
-
+        
         // Stat Setter
         crossbow.weapons[0].projectile.pierce = weapon.pierce + SpaceMarine.mod.pierceLvl;
         crossbow.weapons[0].rate = weapon.speed;

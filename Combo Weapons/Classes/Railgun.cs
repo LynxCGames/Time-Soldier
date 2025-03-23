@@ -11,6 +11,7 @@ using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
 using UnityEngine;
 using BTD_Mod_Helper.Api;
 using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,6 +24,7 @@ public class Railgun : ComboTemplate
     public override float FontSize => 60;
     public override float[] StartingValues => [999, 2f, 2];
     public override string Range => "Long-Range";
+    public override int[] PierceValue => [0];
     public override string SpecialMods =>
         "Fires a single beam that persists for a short while. Bloons that pass through the beam take damage every second.\n\n" +
         " - Long-Range weapon\n" +
@@ -139,16 +141,16 @@ public class RailgunEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
-        foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+        foreach (var modifier in GetContent<ModifierTemplate>())
         {
             if (modifier.ModName == "Rapid Fire")
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

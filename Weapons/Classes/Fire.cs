@@ -31,8 +31,8 @@ public class FireSelect : WeaponSelect
         fire.weapons[0].projectile.pierce = weapon.pierce + SpaceMarine.mod.pierceLvl;
         fire.weapons[0].rate = weapon.speed;
         fire.weapons[0].projectile.GetDamageModel().damage = weapon.damage + SpaceMarine.mod.damageLvl;
-        burn.GetBehavior<DamageOverTimeModel>().damage = weapon.level;
 
+        burn.GetBehavior<DamageOverTimeModel>().damage = weapon.level + SpaceMarine.mod.damageLvl;
         fire.weapons[0].projectile.AddBehavior(burn);
 
         // Basic Stat Adjusters

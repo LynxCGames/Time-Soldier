@@ -11,6 +11,7 @@ using Il2CppAssets.Scripts.Models.Towers.Weapons.Behaviors;
 using UnityEngine;
 using BTD_Mod_Helper.Api;
 using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -23,8 +24,7 @@ public class IcyBarrage : ComboTemplate
     public override float FontSize => 60;
     public override float[] StartingValues => [6, 2.2f, 1];
     public override string Range => "Long-Range";
-    public override string PierceType => "InArea";
-    public override int PierceValue => 1;
+    public override int[] PierceValue => [0, 1];
     public override string SpecialMods =>
         "Fires 3 aerial missiles near the targeted Bloon that can freeze Bloons hit.\n\n" +
         " - Long-Range weapon\n" +
@@ -142,16 +142,16 @@ public class IcyBarrageEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
-        foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+        foreach (var modifier in GetContent<ModifierTemplate>())
         {
             if (modifier.ModName == "Rapid Fire")
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }

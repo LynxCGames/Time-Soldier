@@ -29,6 +29,7 @@ public class IciclesSelect : SpecialSelect
                 icicles.weapons[0].projectile.scale /= 2;
                 icicles.weapons[0].rate = 0.9f;
                 icicles.weapons[0].projectile.pierce = 2;
+                icicles.weapons[0].projectile.maxPierce = 2;
                 icicles.weapons[0].projectile.GetDamageModel().damage = modifier.bonus;
                 icicles.weapons[0].projectile.GetDamageModel().immuneBloonProperties = BloonProperties.White;
                 icicles.weapons[0].projectile.GetBehavior<TravelStraitModel>().Lifespan *= 1.6f;
@@ -51,6 +52,7 @@ public class IciclesSelect : SpecialSelect
                 icicles.display = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.display;
                 icicles.scale /= 2;
                 icicles.pierce = 2;
+                icicles.maxPierce = 2;
                 icicles.GetDamageModel().damage = modifier.bonus;
                 icicles.GetDamageModel().immuneBloonProperties = BloonProperties.White;
                 icicles.GetBehavior<TravelStraitModel>().Lifespan *= 1.6f;
@@ -73,6 +75,7 @@ public class IciclesSelect : SpecialSelect
                 icicles.display = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.display;
                 icicles.scale /= 2;
                 icicles.pierce = 2;
+                icicles.maxPierce = 2;
                 icicles.GetDamageModel().damage = modifier.bonus;
                 icicles.GetDamageModel().immuneBloonProperties = BloonProperties.White;
                 icicles.GetBehavior<TravelStraitModel>().Lifespan *= 1.6f;
@@ -96,6 +99,7 @@ public class IciclesSelect : SpecialSelect
                 icicles.display = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.display;
                 icicles.scale /= 2;
                 icicles.pierce = 2;
+                icicles.maxPierce = 2;
                 icicles.GetDamageModel().damage = modifier.bonus;
                 icicles.GetDamageModel().immuneBloonProperties = BloonProperties.White;
                 icicles.GetBehavior<TravelStraitModel>().Lifespan *= 1.6f;
@@ -115,6 +119,53 @@ public class IciclesSelect : SpecialSelect
                 {
                     PiercingShotMod.PiercingShot(towerModel);
                 }
+            }
+
+            if (SpaceMarine.mod.weapon == "Blizzard")
+            {
+                towerModel.GetAttackModel().weapons[0].GetDescendant<RandomEmissionModel>().count = modifier.level + 5;
+
+                var icicles = Game.instance.model.GetTowerFromId("TackShooter").GetAttackModel().weapons[0].projectile.Duplicate();
+                icicles.display = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.display;
+                icicles.scale /= 2;
+                icicles.pierce = 2;
+                icicles.maxPierce = 2;
+                icicles.GetDamageModel().damage = modifier.bonus;
+                icicles.GetDamageModel().immuneBloonProperties = BloonProperties.White;
+                icicles.GetBehavior<TravelStraitModel>().Lifespan *= 1.6f;
+
+                if (SpaceMarine.mod.camoActive == true)
+                {
+                    icicles.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
+                }
+                if (SpaceMarine.mod.mibActive == true)
+                {
+                    icicles.GetDamageModel().immuneBloonProperties = BloonProperties.None;
+                }
+
+                towerModel.GetAttackModel().weapons[1].projectile.AddBehavior(new CreateProjectileOnContactModel("IcicileMod", icicles, new ArcEmissionModel("", 8, 0, 360, null, false, false), true, false, false));
+            }
+
+            if (SpaceMarine.mod.weapon == "Arctic Knight")
+            {
+                var icicle = Game.instance.model.GetTowerFromId("DartMonkey").GetAttackModel().weapons[0].projectile.Duplicate();
+                icicle.GetDamageModel().damage = modifier.bonus;
+                icicle.GetDamageModel().immuneBloonProperties = BloonProperties.White;
+                icicle.display = Game.instance.model.GetTowerFromId("IceMonkey-005").GetAttackModel().weapons[0].projectile.display;
+                icicle.scale /= 2;
+                icicle.pierce = 2;
+                icicle.maxPierce = 2;
+
+                if (SpaceMarine.mod.camoActive == true)
+                {
+                    icicle.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
+                }
+                if (SpaceMarine.mod.mibActive == true)
+                {
+                    icicle.GetDamageModel().immuneBloonProperties = BloonProperties.None;
+                }
+
+                towerModel.GetAttackModel().weapons[0].projectile.AddBehavior(new CreateProjectileOnContactModel("IcicleMod", icicle, new ArcEmissionModel("", 3, 0, 25, null, true, false), false, false, false));
             }
 
             tower.UpdateRootModel(towerModel);
@@ -196,6 +247,30 @@ public class IciclesEquip : SpecialEquiped
             if (SpaceMarine.mod.modifier1 == "Piercing Shot" || SpaceMarine.mod.modifier2 == "Piercing Shot" || SpaceMarine.mod.modifier3 == "Piercing Shot")
             {
                 PiercingShotMod.PiercingShot(towerModel);
+            }
+        }
+
+        if (SpaceMarine.mod.weapon == "Blizzard")
+        {
+            towerModel.GetAttackModel().weapons[0].GetDescendant<RandomEmissionModel>().count = modifier.level + 5;
+
+            foreach (var behavior in towerModel.GetAttackModel().weapons[0].projectile.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+            {
+                if (behavior.name.Contains("IcicileMod"))
+                {
+                    behavior.projectile.GetDamageModel().damage = modifier.bonus;
+                }
+            }
+        }
+
+        if (SpaceMarine.mod.weapon == "Arctic Knight")
+        {
+            foreach (var behavior in towerModel.GetAttackModel().weapons[0].projectile.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+            {
+                if (behavior.name.Contains("IcicleMod"))
+                {
+                    behavior.projectile.GetDamageModel().damage = modifier.bonus;
+                }
             }
         }
 

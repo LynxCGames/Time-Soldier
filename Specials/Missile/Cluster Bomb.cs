@@ -10,6 +10,7 @@ using UnityEngine;
 using Il2CppAssets.Scripts.Models.Towers.Behaviors.Emissions;
 using Il2CppSystem.Linq;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Towers.Weapons.Behaviors;
 
 namespace SpaceMarine;
 
@@ -147,6 +148,75 @@ public class ClusterBombSelect : SpecialSelect
                 towerModel.GetAttackModel().weapons[0].projectile.AddBehavior(new CreateProjectileOnContactModel("ClusterBomb", bomb, new ArcEmissionModel("", (int)modifier.bonus, 0, 360, null, true, false), true, true, false));
             }
 
+            if (SpaceMarine.mod.weapon == "Plasma Launcher")
+            {
+                var explosion = Game.instance.model.GetTowerFromId("BombShooter").GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.Duplicate();
+                explosion.GetDamageModel().immuneBloonProperties = BloonProperties.Black;
+                explosion.GetDamageModel().damage = modifier.level;
+
+                if (SpaceMarine.mod.camoActive == true)
+                {
+                    explosion.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
+                }
+                if (SpaceMarine.mod.mibActive == true)
+                {
+                    explosion.GetDamageModel().immuneBloonProperties = BloonProperties.None;
+                }
+
+                var sound = Game.instance.model.GetTowerFromId("MortarMonkey").GetAttackModel().weapons[0].projectile.GetBehavior<CreateSoundOnProjectileExhaustModel>().Duplicate();
+                var effect = Game.instance.model.GetTowerFromId("MortarMonkey").GetAttackModel().weapons[0].projectile.GetBehavior<CreateEffectOnExpireModel>().Duplicate();
+                var bombEffect = Game.instance.model.GetTowerFromId("BombShooter").GetAttackModel().weapons[0].projectile.GetBehavior<CreateEffectOnContactModel>().effectModel.Duplicate();
+                effect.effectModel = bombEffect;
+
+                var bomb = Game.instance.model.GetTowerFromId("DartMonkey").GetAttackModel().weapons[0].projectile.Duplicate();
+                bomb.GetDamageModel().immuneBloonProperties = BloonProperties.None;
+                bomb.GetDamageModel().damage = 0;
+                bomb.GetDamageModel().maxDamage = 0;
+                bomb.pierce = 999;
+                bomb.GetBehavior<TravelStraitModel>().Speed /= 2f;
+                bomb.GetBehavior<TravelStraitModel>().Lifespan = 0.2f;
+                bomb.display = Game.instance.model.GetTowerFromId("BombShooter").GetAttackModel().weapons[0].projectile.display;
+                bomb.scale /= 1.5f;
+
+                bomb.AddBehavior(new CreateProjectileOnExpireModel("Explosion", explosion, new SingleEmissionModel("", null), false));
+                bomb.AddBehavior(effect);
+                bomb.AddBehavior(sound);
+
+                foreach (var behavior in towerModel.GetAttackModel().weapons[0].GetBehavior<ChangeProjectilePerEmitModel>().changedProjectileModel.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+                {
+                    if (behavior.name.Contains("MiniRocketStorm"))
+                    {
+                        behavior.projectile.AddBehavior(new CreateProjectileOnContactModel("ClusterBomb", bomb, new ArcEmissionModel("", (int)Mathf.Round(modifier.bonus / 2), 0, 360, null, true, false), true, true, false));
+                    }
+                }
+            }
+
+            if (SpaceMarine.mod.weapon == "Graviton")
+            {
+                var bombs = Game.instance.model.GetTowerFromId("BombShooter").GetAttackModel().Duplicate();
+                bombs.name = "ClusterBombMod";
+                bombs.range = 35;
+                bombs.weapons[0].emission = new ArcEmissionModel("", (int)modifier.bonus, 0, 360, null, false, false);
+                bombs.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage = 2 * modifier.level - 1;
+                bombs.weapons[0].projectile.GetBehavior<TravelStraitModel>().lifespan /= 2;
+                bombs.weapons[0].startInCooldown = true;
+                bombs.weapons[0].customStartCooldown = 1;
+                bombs.weapons[0].rate = 1.5f;
+                bombs.weapons[0].ejectX = 0;
+                bombs.weapons[0].ejectY = 0;
+
+                if (SpaceMarine.mod.camoActive == true)
+                {
+                    bombs.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = false);
+                }
+                if (SpaceMarine.mod.mibActive == true)
+                {
+                    bombs.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().immuneBloonProperties = BloonProperties.None;
+                }
+
+                towerModel.GetDescendant<CreateTowerModel>().tower.AddBehavior(bombs);
+            }
+
             tower.UpdateRootModel(towerModel);
         }
     }
@@ -202,7 +272,7 @@ public class ClusterBombEquip : SpecialEquiped
                 if (behavior.name.Contains("ClusterBomb"))
                 {
                     behavior.GetDescendant<ArcEmissionModel>().count = (int)Mathf.Round(modifier.bonus / 2);
-                    behavior.projectile.GetDamageModel().damage = 2 * modifier.level - 1;
+                    behavior.projectile.GetDescendant<CreateProjectileOnExpireModel>().projectile.GetDamageModel().damage = 2 * modifier.level - 1;
                 }
             }
         }
@@ -214,7 +284,39 @@ public class ClusterBombEquip : SpecialEquiped
                 if (behavior.name.Contains("ClusterBomb"))
                 {
                     behavior.GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus;
-                    behavior.projectile.GetDamageModel().damage = 2 * modifier.level - 1;
+                    behavior.projectile.GetDescendant<CreateProjectileOnExpireModel>().projectile.GetDamageModel().damage = 2 * modifier.level - 1;
+                }
+            }
+        }
+
+        if (SpaceMarine.mod.weapon == "Plasma Launcher")
+        {
+            foreach (var behavior in towerModel.GetAttackModel().weapons[0].GetBehavior<ChangeProjectilePerEmitModel>().changedProjectileModel.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+            {
+                if (behavior.name.Contains("MiniRocketStorm"))
+                {
+                    foreach (var bombs in behavior.projectile.GetDescendants<CreateProjectileOnContactModel>().ToArray())
+                    {
+                        if (bombs.name.Contains("ClusterBomb"))
+                        {
+                            bombs.GetDescendant<ArcEmissionModel>().count = (int)Mathf.Round(modifier.bonus / 2);
+                            bombs.projectile.GetDescendant<CreateProjectileOnExpireModel>().projectile.GetDamageModel().damage = modifier.level;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (SpaceMarine.mod.weapon == "Graviton")
+        {
+            var vortex = towerModel.GetDescendant<CreateTowerModel>().tower;
+
+            foreach (var attack in vortex.GetAttackModels())
+            {
+                if (attack.name.Contains("ClusterBombMod"))
+                {
+                    attack.weapons[0].GetDescendant<ArcEmissionModel>().count = (int)modifier.bonus;
+                    attack.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage = 2 * modifier.level - 1;
                 }
             }
         }

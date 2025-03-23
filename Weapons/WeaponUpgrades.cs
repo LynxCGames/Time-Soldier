@@ -89,7 +89,7 @@ public class WeaponUpgrades : BloonsTD6Mod
             }
         }));
         ModHelperImage upgradeImage = upgradeBtn.AddImage(new Info("image", 0, 0, 100), VanillaSprites.UpgradeIcon2);
-
+        
         return panel;
     }
 }

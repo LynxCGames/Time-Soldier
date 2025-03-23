@@ -47,7 +47,7 @@ public class ModifierUpgrades : BloonsTD6Mod
         ModHelperButton upgradeBtn = panel.AddButton(new Info("button", 225, -230, 120), VanillaSprites.BlueBtnSquare, new System.Action(() => {
             if (mod.scrap >= modifier.cost && modifier.level > 0 && modifier.level < modifier.MaxLevel)
             {
-                ModifierLeveling.ModifierLevels(modifier, tower);
+                ModifierMethods.ModifierLevels(modifier, tower);
 
                 mod.scrap -= modifier.cost;
                 mod.usedScrap += modifier.cost;
@@ -87,7 +87,7 @@ public class ModifierUpgrades : BloonsTD6Mod
                 
                 if (mod.modifier1 == modifier.ModName || mod.modifier2 == modifier.ModName || mod.modifier3 == modifier.ModName)
                 {
-                    EquipedModifierLevel.LevelEquipedModifier(modifier, tower);
+                    ModifierMethods.LevelEquipedModifier(modifier, tower);
                 }
             }
             if (mod.scrap >= modifier.cost && modifier.level == 0)
@@ -104,7 +104,7 @@ public class ModifierUpgrades : BloonsTD6Mod
             }
         }));
         ModHelperImage upgradeImage = upgradeBtn.AddImage(new Info("image", 0, 0, 100), VanillaSprites.UpgradeIcon2);
-
+        
         return panel;
     }
 }

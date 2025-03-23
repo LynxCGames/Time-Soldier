@@ -6,9 +6,9 @@ using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Models.Towers.Filters;
 using Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors;
 using Il2Cpp;
-using BTD_Mod_Helper.Api;
 using UnityEngine;
 using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Models.Towers.Weapons;
 
 namespace SpaceMarine;
 
@@ -21,8 +21,7 @@ public class HydraRocket : ComboTemplate
     public override float FontSize => 60;
     public override float[] StartingValues => [8, 1.35f, 1];
     public override string Range => "Mid-Range";
-    public override string PierceType => "OnContact";
-    public override int PierceValue => 1;
+    public override int[] PierceValue => [0, 1];
     public override string SpecialMods =>
         "Hydra rockets can explode up to 3 times. Pierce affects the pierce of the explosions only.\n\n" +
         " - Mid-Range weapon\n" +
@@ -92,7 +91,7 @@ public class HydraRocketLevel : ComboLevel
     public override string WeaponName => "Hydra Rockets";
     public override void Level(WeaponTemplate weapon1, ComboTemplate combo)
     {
-        foreach (var weapon2 in ModContent.GetContent<WeaponTemplate>())
+        foreach (var weapon2 in GetContent<WeaponTemplate>())
         {
             if (weapon1.WeaponName == combo.comboWeapons[0] && weapon2.WeaponName == combo.comboWeapons[1])
             {
@@ -147,7 +146,7 @@ public class HydraRocketEquip : ComboEquiped
 
         for (int i = 0; i < SpaceMarine.mod.speedLvl; i++)
         {
-            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+            towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= 1.06f);
         }
 
         foreach (var modifier in GetContent<ModifierTemplate>())
@@ -156,14 +155,14 @@ public class HydraRocketEquip : ComboEquiped
             {
                 if (SpaceMarine.mod.modifier1 == "Rapid Fire" || SpaceMarine.mod.modifier2 == "Rapid Fire" || SpaceMarine.mod.modifier3 == "Rapid Fire")
                 {
-                    towerModel.GetAttackModel().weapons[0].rate /= (modifier.bonus / 100 + 1);
+                    towerModel.GetAttackModel().GetDescendants<WeaponModel>().ForEach(model => model.rate /= (modifier.bonus / 100) + 1);
                 }
             }
         }
 
         if (SpaceMarine.mod.modifier1 == "Cluster Bomb" || SpaceMarine.mod.modifier2 == "Cluster Bomb" || SpaceMarine.mod.modifier3 == "Cluster Bomb")
         {
-            foreach (var modifier in ModContent.GetContent<SpecialTemplate>())
+            foreach (var modifier in GetContent<SpecialTemplate>())
             {
                 if (modifier.ModName == "Cluster Bomb")
                 {
@@ -171,7 +170,7 @@ public class HydraRocketEquip : ComboEquiped
                     {
                         if (behavior.name.Contains("ClusterBomb"))
                         {
-                            behavior.projectile.GetDamageModel().damage = weapon.damage;
+                            behavior.projectile.GetDescendant<CreateProjectileOnExpireModel>().projectile.GetDamageModel().damage = weapon.damage;
                         }
                     }
                 }

@@ -5,7 +5,8 @@ using UnityEngine;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using BTD_Mod_Helper.Api;
-using Il2CppAssets.Scripts.Unity.UI_New.Store;
+using BTD_Mod_Helper.Extensions;
+using BTD_Mod_Helper.Api.Helpers;
 
 namespace SpaceMarine;
 
@@ -14,7 +15,7 @@ public class MenuUpgrade : BloonsTD6Mod
     public static void UpgradeMenu(RectTransform rect, Tower tower, ModHelperPanel mainPanel, ModHelperText scrapCount, ModHelperPanel tester)
     {
         // Weapon Shop
-        ModHelperText weaponText = mainPanel.AddText(new Info("text", -810, 710, 750, 100), "Weapons", 80);
+        /*ModHelperText weaponText = mainPanel.AddText(new Info("text", -810, 710, 750, 100), "Weapons", 80);
         ModHelperScrollPanel weaponScroll = mainPanel.AddScrollPanel(new Info("scrollPanel", -810, 240, 750, 800), RectTransform.Axis.Vertical, VanillaSprites.BrownInsertPanel, 15, 50);
         foreach (var weapon in ModContent.GetContent<WeaponTemplate>())
         {
@@ -35,6 +36,79 @@ public class MenuUpgrade : BloonsTD6Mod
         foreach (var modifier in ModContent.GetContent<SpecialTemplate>())
         {
             specialScroll.AddScrollContent(SpecialUpgrades.CreateSpecialShop(modifier, tower, scrapCount));
+        }*/
+
+        ModHelperText selectText = mainPanel.AddText(new Info("text", -810, 710, 750, 100), "Upgrade Select", 70);
+        ModHelperText upgradeText = mainPanel.AddText(new Info("text", 0, 710, 750, 100), "Upgrades", 90);
+        ModHelperText specialSelectText = mainPanel.AddText(new Info("text", 810, 710, 750, 100), "Special Select", 70);
+        ModHelperPanel upgradeSelect = mainPanel.AddPanel(new Info("Panel", -810, 240, 750, 800), VanillaSprites.BrownInsertPanel);
+        ModHelperScrollPanel upgradeScroll = mainPanel.AddScrollPanel(new Info("scrollPanel", 0, 240, 750, 800), RectTransform.Axis.Vertical, VanillaSprites.BrownInsertPanel, 15, 50);
+        ModHelperScrollPanel specialScroll = mainPanel.AddScrollPanel(new Info("ScrollPanel", 810, 240, 750, 800), RectTransform.Axis.Vertical, VanillaSprites.BrownInsertPanel, 15, 50);
+
+        ModHelperButton weaponBtn = upgradeSelect.AddButton(new Info("button", 0, 250, 650, 160), VanillaSprites.BlueBtnLong, new System.Action(() => {
+            if (mod.upgradeSelect != "Weapons")
+            {
+                mod.upgradeSelect = "Weapons";
+                MenuUi.instance.CloseMenu();
+                MenuUi.CreateMenu(rect, tower);
+            }
+        }));
+        ModHelperText weaponText = weaponBtn.AddText(new Info("text", 0, 0, 600, 140), "Weapons", 50);
+
+        ModHelperButton modifierBtn = upgradeSelect.AddButton(new Info("button", 0, 0, 650, 160), VanillaSprites.BlueBtnLong, new System.Action(() => {
+            if (mod.upgradeSelect != "Modifiers")
+            {
+                mod.upgradeSelect = "Modifiers";
+                MenuUi.instance.CloseMenu();
+                MenuUi.CreateMenu(rect, tower);
+            }
+        }));
+        ModHelperText modifierText = modifierBtn.AddText(new Info("text", 0, 0, 600, 140), "General Modifiers", 50);
+
+        ModHelperButton specialBtn = upgradeSelect.AddButton(new Info("button", 0, -250, 650, 160), VanillaSprites.BlueBtnLong, new System.Action(() => {
+            if (mod.upgradeSelect != "Specials")
+            {
+                mod.upgradeSelect = "Specials";
+                MenuUi.instance.CloseMenu();
+                MenuUi.CreateMenu(rect, tower);
+            }
+        }));
+        ModHelperText specialText = specialBtn.AddText(new Info("text", 0, 0, 600, 140), "Special Modifiers", 50);
+        
+        if (mod.upgradeSelect == "Weapons")
+        {
+            foreach (var weapon in ModContent.GetContent<WeaponTemplate>())
+            {
+                upgradeScroll.AddScrollContent(WeaponUpgrades.CreateWeaponShop(weapon, tower, scrapCount));
+            }
+        }
+        if (mod.upgradeSelect == "Modifiers")
+        {
+            foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+            {
+                upgradeScroll.AddScrollContent(ModifierUpgrades.CreateModShop(modifier, tower, scrapCount));
+            }
+            foreach (var modifier in ModContent.GetContent<ScavengerTemplate>())
+            {
+                upgradeScroll.AddScrollContent(ScavengerUpgrades.CreateModShop(modifier, tower));
+            }
+        }
+        if (mod.upgradeSelect == "Specials")
+        {
+            foreach (var weapon in ModContent.GetContent<WeaponTemplate>())
+            {
+                specialScroll.AddScrollContent(SpecialUpgrades.CreateSpecialSelect(rect, weapon, tower));
+            }
+        }
+        if (mod.upgradeSelect == "Specials")
+        {
+            foreach (var modifier in ModContent.GetContent<SpecialTemplate>())
+            {
+                if (modifier.Weapon == mod.specialSelected)
+                {
+                    upgradeScroll.AddScrollContent(SpecialUpgrades.CreateSpecialShop(modifier, tower, scrapCount));
+                }
+            }
         }
 
         // Pierce Shop
@@ -51,7 +125,7 @@ public class MenuUpgrade : BloonsTD6Mod
                 }
             }
         }));
-
+        
         ModHelperText pierceCost = pierceBtn.AddText(new Info("text", 50, 0, 300, 180), "", 70);
         ModHelperImage pierceIcon = pierceBtn.AddImage(new Info("scrapIcon", -70, 0, 100), ModContent.GetSprite(mod, "Scrap-Icon"));
 
@@ -302,7 +376,7 @@ public class MenuUpgrade : BloonsTD6Mod
             }
         }));
 
-        ModHelperText mibCost = mibBtn.AddText(new Info("scrapCount", 50, 0, 200, 180), $"{mod.mibCost}", 70);
+        ModHelperText mibCost = mibBtn.AddText(new Info("scrapCount", 50, 0, 200, 180), "", 70);
         ModHelperPanel mibLvl = mibPanel.AddPanel(new Info("Panel", 165, 0, 80), VanillaSprites.RedBtnSquareSmall);
         ModHelperImage mibIcon = mibBtn.AddImage(new Info("scrapIcon", -70, 0, 100), ModContent.GetSprite(mod, "Scrap-Icon"));
 

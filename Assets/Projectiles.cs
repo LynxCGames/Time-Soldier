@@ -33,3 +33,23 @@ public class PiercingRailgunProj : ModDisplay
         Set2DTexture(node, Name);
     }
 }
+
+public class VineGrowthSnow : ModDisplay
+{
+    public override string BaseDisplay => Generic2dDisplay;
+
+    public override void ModifyDisplayNode(UnityDisplayNode node)
+    {
+        Set2DTexture(node, Name);
+    }
+}
+
+public class VineGrowthFire : ModDisplay
+{
+    public override string BaseDisplay => Generic2dDisplay;
+
+    public override void ModifyDisplayNode(UnityDisplayNode node)
+    {
+        Set2DTexture(node, Name);
+    }
+}

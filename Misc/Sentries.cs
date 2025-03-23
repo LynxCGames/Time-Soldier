@@ -109,46 +109,39 @@ public class VortexTower : ModTower
         {
             towerModel.RemoveBehavior(attack);
         }
+        towerModel.RemoveBehavior<CreateSoundOnTowerPlaceModel>();
 
         var displayEffect = Game.instance.model.GetTowerFromId("TranceTotem").GetAttackModel().weapons[0].GetBehavior<EjectEffectModel>().effectModel.Duplicate();
-        towerModel.AddBehavior(new LinkDisplayScaleToTowerRangeModel("", displayEffect.assetId, 35, 28, ""));
-
         var display = Game.instance.model.GetTowerFromId("TranceTotem").GetAttackModel().weapons[0].projectile.GetBehavior<DisplayModel>().Duplicate();
         display.display = displayEffect.assetId;
+        towerModel.AddBehavior(new LinkDisplayScaleToTowerRangeModel("", displayEffect.assetId, 35, 28, ""));
         towerModel.AddBehavior(display);
 
+        var damage = Game.instance.model.GetTowerFromId("IceMonkey").GetAttackModel().Duplicate();
+        damage.range = towerModel.range;
+        damage.weapons[0].projectile.radius = towerModel.range;
+        damage.GetDescendants<FilterOutTagModel>().ForEach(model => model.tag = "");
+        damage.weapons[0].projectile.GetDamageModel().immuneBloonProperties = Il2Cpp.BloonProperties.None;
+        damage.weapons[0].projectile.RemoveBehavior<FreezeModel>();
+        damage.weapons[0].projectile.pierce = 999;
+        damage.weapons[0].RemoveBehavior<CreateSoundOnProjectileCreatedModel>();
+        damage.weapons[0].rate = 0.5f;
+        towerModel.AddBehavior(damage);
+
         var vortex = Game.instance.model.GetTowerFromId("TranceTotem").GetAttackModel().Duplicate();
-        vortex.weapons[0].projectile.display = Game.instance.model.GetTowerFromId("TranceTotem").GetAttackModel().weapons[0].GetBehavior<EjectEffectModel>().effectModel.assetId;
-        vortex.weapons[0].projectile.pierce = 10;
         vortex.GetDescendants<FilterInvisibleModel>().ForEach(model => model.isActive = true);
-        //vortex.weapons[0].projectile.GetBehavior<AgeModel>().Lifespan = 1;
-        //vortex.weapons[0].fireWithoutTarget = true;
-        //vortex.weapons[0].rate = 1f;
-        //vortex.weapons[0].projectile.GetBehavior<ClearHitBloonsModel>().interval = 0.5f;
+        vortex.weapons[0].projectile.display = Game.instance.model.GetTowerFromId("TranceTotem").GetAttackModel().weapons[0].GetBehavior<EjectEffectModel>().effectModel.assetId;
+        vortex.weapons[0].GetBehavior<EjectEffectModel>().lifespan = 6;
+        vortex.weapons[0].projectile.pierce = 10;
+        vortex.weapons[0].projectile.GetBehavior<AgeModel>().Lifespan = 6;
+        vortex.weapons[0].fireWithoutTarget = true;
         vortex.weapons[0].projectile.RemoveBehavior<RemoveBloonModifiersModel>();
-
-        //var vortexBurst = Game.instance.model.GetTowerFromId("BoomerangMonkey-500").GetAttackModel(1).Duplicate();
-        //vortexBurst.weapons[0].projectile.radius = 35;
-        //vortexBurst.weapons[0].projectile.pierce = 999;
-        //vortexBurst.weapons[0].projectile.GetDamageModel().damage = 1;
-        //vortexBurst.weapons[0].projectile.GetDamageModel().immuneBloonProperties = Il2Cpp.BloonProperties.None;
-        //vortexBurst.weapons[0].rate = 0.5f;
-        /*
-        towerModel.AddBehavior(new LinkProjectileRadiusToTowerRangeModel("", vortexBurst.weapons[0].projectile, 35, 0, 35));
-
-        foreach (var behavior in vortexBurst.weapons[0].projectile.GetBehaviors<DamageModifierForTagModel>())
-        {
-            vortexBurst.weapons[0].projectile.RemoveBehavior(behavior);
-        }*/
-
-        //var vortexTrance = Game.instance.model.GetTowerFromId("Mermonkey-004").GetAttackModel().Duplicate();
-        //vortexTrance.weapons[0].projectile.GetBehavior<AgeModel>().Lifespan = 5;
-
-
+        vortex.weapons[0].projectile.GetBehavior<TranceBloonModel>().orbitRadius = 32;
+        vortex.weapons[0].startInCooldown = false;
         towerModel.AddBehavior(vortex);
-
+                
         towerModel.isSubTower = true;
-        //towerModel.AddBehavior(new TowerExpireModel("ExpireModel", 5f, 5, false, false));
+        towerModel.AddBehavior(new TowerExpireModel("ExpireModel", 6f, 5, false, false));
         towerModel.AddBehavior(new CreditPopsToParentTowerModel("CreditPopsToParentTowerModel_"));
     }
     

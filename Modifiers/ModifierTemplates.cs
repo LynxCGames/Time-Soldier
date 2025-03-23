@@ -99,4 +99,12 @@ namespace SpaceMarine
             Game.instance.model.GetBloon("Ceramic").display
         ];
     }
+    
+    public class Scavenger : ScavengerTemplate
+    {
+        public override int MaxLevel => 6;
+        public override string[] CostValues => ["5,000", "20,000", "70,000", "200,000", "400,000", "750,000", "0"];
+        public override float[] Cost => [5000, 20000, 70000, 200000, 500000, 750000, 0];
+        public override float StartingValue => 1;
+    }
 }

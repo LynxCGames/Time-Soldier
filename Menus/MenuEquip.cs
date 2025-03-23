@@ -62,6 +62,16 @@ public class MenuEquip : BloonsTD6Mod
                 }
             }
         }
+        foreach (var modifier in ModContent.GetContent<ScavengerTemplate>())
+        {
+            if (modifier.isUnlocked == true && mod.weapon != "" && mod.modifierCount < 3)
+            {
+                if ("Scavenger" != mod.modifier1 && "Scavenger" != mod.modifier2 && "Scavenger" != mod.modifier3)
+                {
+                    modifierScroll.AddScrollContent(Equipment.ScavengerEquip(modifier, tower));
+                }
+            }
+        }
 
         // Special Equipment
         ModHelperText specialText = mainPanel.AddText(new Info("text", 900, 710, 750, 100), "Special Modifiers", 60);
@@ -70,13 +80,24 @@ public class MenuEquip : BloonsTD6Mod
         {
             if (modifier.isUnlocked == true && mod.weapon != "" && mod.modifierCount < 3)
             {
-                for (int i = 0; i < modifier.Weapons.Count(); i++)
+                if (modifier.Weapon == mod.weapon)
                 {
-                    if (modifier.Weapons[i] == mod.weapon)
+                    if (modifier.ModName != mod.modifier1 && modifier.ModName != mod.modifier2 && modifier.ModName != mod.modifier3)
                     {
-                        if (modifier.ModName != mod.modifier1 && modifier.ModName != mod.modifier2 && modifier.ModName != mod.modifier3)
+                        specialScroll.AddScrollContent(Equipment.SpecialEquip(modifier, tower));
+                    }
+                }
+
+                foreach (var combo in ModContent.GetContent<ComboTemplate>())
+                {
+                    if (combo.WeaponName == mod.weapon)
+                    {
+                        if (modifier.Weapon == combo.comboWeapons[0] || modifier.Weapon == combo.comboWeapons[1])
                         {
-                            specialScroll.AddScrollContent(Equipment.SpecialEquip(modifier, tower));
+                            if (modifier.ModName != mod.modifier1 && modifier.ModName != mod.modifier2 && modifier.ModName != mod.modifier3)
+                            {
+                                specialScroll.AddScrollContent(Equipment.SpecialEquip(modifier, tower));
+                            }
                         }
                     }
                 }
@@ -113,6 +134,11 @@ public class MenuEquip : BloonsTD6Mod
                 mod.modifier2 = "";
                 mod.modifier3 = "";
 
+                foreach (var modifier in ModContent.GetContent<ModifierTemplate>())
+                {
+                    modifier.icon = modifier.Icon;
+                }
+
                 var towerModel = tower.rootModel.Duplicate().Cast<TowerModel>();
                 towerModel.range = 10;
 
@@ -122,7 +148,7 @@ public class MenuEquip : BloonsTD6Mod
                 }
                 foreach (var behavior in towerModel.behaviors)
                 {
-                    if (behavior.name.Contains("SnowstormMod"))
+                    if (behavior.name.Contains("TSMod"))
                     {
                         towerModel.RemoveBehavior(behavior);
                     }
@@ -152,7 +178,7 @@ public class MenuEquip : BloonsTD6Mod
         {
             if (mod.modifier1 == modifier.ModName)
             {
-                ModHelperImage image = addonPanel1.AddImage(new Info("image", 480), modifier.Icon);
+                ModHelperImage image = addonPanel1.AddImage(new Info("image", 480), modifier.icon);
             }
             if (mod.modifier2 == modifier.ModName)
             {
@@ -161,6 +187,22 @@ public class MenuEquip : BloonsTD6Mod
             if (mod.modifier3 == modifier.ModName)
             {
                 ModHelperImage image = addonPanel3.AddImage(new Info("image", 480), modifier.Icon);
+            }
+        }
+
+        foreach (var modifier in ModContent.GetContent<ScavengerTemplate>())
+        {
+            if (mod.modifier1 == "Scavenger")
+            {
+                ModHelperImage image = addonPanel1.AddImage(new Info("image", 480), ModContent.GetSprite(mod, "Scrap-Icon"));
+            }
+            if (mod.modifier2 == "Scavenger")
+            {
+                ModHelperImage image = addonPanel2.AddImage(new Info("image", 480), ModContent.GetSprite(mod, "Scrap-Icon"));
+            }
+            if (mod.modifier3 == "Scavenger")
+            {
+                ModHelperImage image = addonPanel3.AddImage(new Info("image", 480), ModContent.GetSprite(mod, "Scrap-Icon"));
             }
         }
 
